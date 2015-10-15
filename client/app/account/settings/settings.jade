@@ -2,6 +2,26 @@ div(ng-include='"components/navbar/navbar.html"')
 .container
   .row
     .col-sm-12
+      h1 User information
+    .col-sm-12
+      form.form(name='infoForm')
+        .form-group.col-sm-6
+            label Full Name
+            input.form-control(type='text', placeholder='Enter your fullname', ng-model='user.name')
+        .form-group.col-sm-6
+            label Email
+            input.form-control(type='email', name='email', placeholser='me@email.com', ng-model='user.email')
+            span.alert-danger(ng-show='infoForm.email.$error.email') Invalid email!
+        .form-group.col-sm-6
+            label City
+            input.form-control(type='text', placeholder='Hanoi', ng-model='user.city')
+        .form-group.col-sm-6
+            label State/Country
+            input.form-control(type='text', placeholder='Vietnam', ng-model='user.state' required)
+
+        button.btn.btn-lg.btn-primary(ng-click='updateUser(user)', ng-disabled='infoForm.email.$error.email') Save Changes
+  .row
+    .col-sm-12
       h1 Change Password
     .col-sm-12
       form.form(name='form', ng-submit='changePassword(form)', novalidate='')
@@ -18,4 +38,4 @@ div(ng-include='"components/navbar/navbar.html"')
 
         p.help-block  {{ message }}
 
-        button.btn.btn-lg.btn-primary(type='submit') Save changes
+        button.btn.btn-lg.btn-danger(type='submit') Change Password

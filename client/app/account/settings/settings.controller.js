@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module('bookApp')
-  .controller('SettingsCtrl', function ($scope, User, Auth) {
+  .controller('SettingsCtrl', function ($scope, $http, User, Auth) {
+    $scope.user = Auth.getCurrentUser();
     $scope.errors = {};
 
     $scope.changePassword = function(form) {
@@ -18,4 +19,15 @@ angular.module('bookApp')
         });
       }
 		};
+
+    /**
+     * Update user information
+     */
+    $scope.updateUser = function(user) {
+      //console.log(User());
+      console.log(Auth);
+      $http.put('/api/users/' + Auth.getCurrentUser()._id, user).success(function(updatedUser) {
+        console.log(JSON.stringify(updatedUser, null, 2));
+      });
+    };
   });
