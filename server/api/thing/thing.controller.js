@@ -13,29 +13,6 @@ var _ = require('lodash');
 var request = require('request');
 var Thing = require('./thing.model');
 
-//Query book from google book api: exact title | query volumes | return first result
-exports.query = function(req, res) {
-  var bookTitle = req.params.bookTitle;
-  var bookSearchTerms = '';
-  var bookSearchConditions = '&key=' + process.env.GOOGGLE_API;
-  var googleBookApiOptions = {
-    uri: 'https://www.googleapis.com/books/v1/volumes?q=' + bookTitle + bookSearchTerms + bookSearchConditions,
-    json: true
-  };
-
-  request(googleBookApiOptions, function(error, response, body) {
-    if (error || response.statusCode !== 200) return res.status(500).json({});
-    //Return exact title match, otherwise first result
-    //TODO: CAN MAKE IT BETTER?
-    var result = body.items.filter(function(volume){
-      return volume.volumeInfo.title.toLowerCase() === bookTitle.toLowerCase();
-    });
-    if (!result.length) {result = body.items[0];}
-
-    return res.status(200).json(result);
-  })
-};
-
 // Get list of things
 exports.index = function(req, res) {
   Thing.find(function (err, things) {
