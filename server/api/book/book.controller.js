@@ -21,9 +21,9 @@ exports.query = function(req, res) {
     var result = body.items.filter(function(volume){
       return volume.volumeInfo.title.toLowerCase() === bookTitle.toLowerCase();
     });
-    if (!result.length) {result = body.items[0];}
+    if (!result.length) {result = [body.items[0]];}
 
-    return res.status(200).json(result);
+    return res.status(200).json(result[0]);
   })
 };
 

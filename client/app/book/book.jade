@@ -1,2 +1,32 @@
-.col-md-12
-    | This is the book view.
+div(ng-include='"components/navbar/navbar.html"')
+.container
+  .row
+    header
+        ul
+          li.text-muted List all user books
+          li.text-muted List all users books
+          li.text-muted Add new book
+          li Trading book
+  .row
+    .col-lg-12
+      h1(ng-hide='showAllBook') Your books
+      h1(ng-show='showAllBook') All users books
+      .media-list.list-group.col-md-6.col-sm-12.clearfix(ng-repeat='book in books')
+        .media.list-group-item
+          .media-left
+            img.media-object.img-rounded(ng-src='{{book.cover_url}}')
+          .media-body
+            h4.media-heading {{book.name}}
+            //First 50 words
+            p.clearfix {{book.des.split(' ').slice(0, 50).join(' ') + "..."}}
+          .media-right
+            button.badge.alert-danger(ng-click='deleteBook(book._id)', ng-hide='showAllBook') X
+            button.badge.alert-success(ng-click='exchageBook(book)', ng-show='showAllBook') E
+  .row
+    form.book(name='bookForm')
+      .input-group
+        .input-group-btn
+          button.btn.btn-success(type='button', ng-click='newBook(newBook.title)'): span.fa.fa-plus-square
+        input.form-control(type='text', ng-model='newBook.title')
+
+div(ng-include='"components/footer/footer.html"')
