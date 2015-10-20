@@ -5,10 +5,20 @@ var mongoose = require('mongoose'),
 
 var BookSchema = new Schema({
   name: String,
-  vol_id: String,
+  vol_id: {type: String, unique: true},
+  vol_url: String,
   cover_url: String,
   des: String,
-  user: {type: Schema.Types.ObjectId, ref: 'User'}
+  users: [{type: Schema.Types.ObjectId, ref: 'User'}],
+  trades: [{
+    asked: {type: Schema.Types.ObjectId, ref: 'User'},
+    asker: {type: Schema.Types.ObjectId, ref: 'User'}
+  }],
+  status: {
+    owned: Boolean,
+    asked: Boolean,
+    askable: Boolean
+  }
 });
 
 module.exports = mongoose.model('Book', BookSchema);

@@ -1,37 +1,27 @@
 'use strict';
 
 var _ = require('lodash');
-var request = require('request');
+
+var helper = require('./helper.js');
 var Book = require('./book.model');
 
 //Query book from google book api: exact title | query volumes | return first result
 exports.query = function(req, res) {
-  var bookTitle = req.params.bookTitle;
-  var bookSearchTerms = '';
-  var bookSearchConditions = '&key=' + process.env.GOOGGLE_API;
-  var googleBookApiOptions = {
-    uri: 'https://www.googleapis.com/books/v1/volumes?q=' + bookTitle + bookSearchTerms + bookSearchConditions,
-    json: true
-  };
-
-  request(googleBookApiOptions, function(error, response, body) {
-    if (error || response.statusCode !== 200) return res.status(500).json({});
-    //Return exact title match, otherwise first result
-    //TODO: CAN MAKE IT BETTER?
-    var result = body.items.filter(function(volume){
-      return volume.volumeInfo.title.toLowerCase() === bookTitle.toLowerCase();
-    });
-    if (!result.length) {result = [body.items[0]];}
-
-    return res.status(200).json(result[0]);
-  })
+  helper.query(req.params.bookTitle, function(error, result) {
+    if (error) return res.status(500).json({});
+    return res.status(200).json(result);
+  });
 };
 
-// Get list of books
-exports.index = function(req, res) {
-  Book.find(function (err, books) {
-    if(err) { return handleError(res, err); }
-    return res.status(200).json(books);
+// Get list of all books
+exports.index = function (req, res) {
+  Book.find(function(err, allBooks) {
+    if (err) {return handleError(res, err);}
+    helper.extraInfo(allBooks, req.user._id, function(error, processBooks) {
+      //console.log('Book', processBooks[0]);
+      if (error) {return handleError(res, error);}
+      return res.status(200).json(processBooks);
+    });
   });
 };
 
@@ -46,9 +36,26 @@ exports.show = function(req, res) {
 
 // Creates a new book in the DB.
 exports.create = function(req, res) {
-  Book.create(req.body, function(err, book) {
-    if(err) { return handleError(res, err); }
-    return res.status(201).json(book);
+  var receivedBook = req.body;
+  //Check vol_id exist: vol_id is unique
+  //Check users exist
+  Book.findOne({vol_id:req.body.vol_id}, function(err, book) {
+    if (err) return res.status(500).json({});
+    if (book) {
+      //book already added --> push user
+      book.users.push(req.user._id);
+      book.save(function(err) {
+        if (err) {return handleError(res, err);}
+        return res.status(200).json(book);
+      });
+    } else {
+      //create new book
+      receivedBook.users = [req.user._id];
+      Book.create(receivedBook, function(err, newBook) {
+        if (err) {return handleError(err, book);}
+        return res.status(201).json(newBook);
+      })
+    }
   });
 };
 
@@ -71,9 +78,13 @@ exports.destroy = function(req, res) {
   Book.findById(req.params.id, function (err, book) {
     if(err) { return handleError(res, err); }
     if(!book) { return res.status(404).send('Not Found'); }
-    book.remove(function(err) {
-      if(err) { return handleError(res, err); }
-      return res.status(204).send('No Content');
+    //remove user out of user list
+    book.users = book.users.filter(function(user) {
+      return user.toString() !== req.user._id.toString();
+    });
+    book.save(function(err) {
+      if (err) {return handleError(res, err);}
+      return res.status(200).json(book);
     });
   });
 };

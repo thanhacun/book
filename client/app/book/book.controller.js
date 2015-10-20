@@ -8,11 +8,13 @@ angular.module('bookApp')
 
     $scope.getBooks = function() {
       $http.get('/api/books').success(function(books) {
+        console.log(books[0].status);
         if ($scope.showAllBook) {
           $scope.books = books;
         } else {
           $scope.books = books.filter(function(book) {
-            return book.user === Auth.getCurrentUser()._id;
+            if (book.users.indexOf(Auth.getCurrentUser()._id) === -1) {return false;}
+            return true;
           });
         }
         //$scope.books = books;
@@ -36,6 +38,8 @@ angular.module('bookApp')
           //add new title to database if exists
           $http.post('/api/books', {
             name: book.volumeInfo.title,
+            vol_id: book.id,
+            vol_url: book.volumeInfo.canonicalVolumeLink,
             cover_url: book.volumeInfo.imageLinks.thumbnail,
             des: book.volumeInfo.description,
             user: Auth.getCurrentUser()._id
@@ -52,6 +56,7 @@ angular.module('bookApp')
     };
 
     $scope.deleteBook = function(bookID) {
+      console.log('Delete book from user', Auth.getCurrentUser()._id);
       $http.delete('/api/books/' + bookID);
     }
   });

@@ -28,9 +28,9 @@ div.navbar.navbar-default.navbar-static-top(ng-controller='NavbarCtrl')
           //span.fa.fa-toggle-on(ng-show='showAllBook')
           p.navbar-text
             = 'All books '
-            button.btn.btn-success.btn-xs(ng-click='allBookToggle()')
-              span.fa.fa-toggle-off(ng-hide='showAllBook')
-              span.fa.fa-toggle-on(ng-show='showAllBook')
+            button.btn.btn-xs(ng-click='allBookToggle()')
+              span.fa.fa-toggle-off.text-success(ng-hide='showAllBook')
+              span.fa.fa-toggle-on.text-danger(ng-show='showAllBook')
             = ' Hello {{ getCurrentUser().name }}'
 
         li(ng-show='isLoggedIn()', ng-class='{active: isActive("/settings")}')
