@@ -20,13 +20,16 @@ div(ng-include='"components/navbar/navbar.html"')
             //First 50 words
             p.clearfix {{book.des.split(' ').slice(0, 50).join(' ') + "..."}}
           .media-right
-            button.badge.alert-danger(ng-click='deleteBook(book._id)', ng-hide='showAllBook') X
-            button.badge.alert-success(ng-click='exchageBook(book)', ng-show='showAllBook') E
+            span.badge {{book.users.length}}
+            button.badge.alert-danger(ng-click='modifyBook.deleteBook(book._id)', ng-show='book.status.owned') X
+            button.badge.alert-success(ng-click='modifyBook.exchangeBook()', ng-show='book.status.askable') E
+            button.badge.alert-info(ng-click='modifyBook.changeBook(book)', ng-show='book.status.asked') ?
+
   .row
     form.book(name='bookForm')
       .input-group
         .input-group-btn
-          button.btn.btn-success(type='button', ng-click='newBook(newBook.title)'): span.fa.fa-plus-square
+          button.btn.btn-success(type='button', ng-click='modifyBook.newBook(newBook.title)', ng-disabled='!newBook.title'): span.fa.fa-plus-square
         input.form-control(type='text', ng-model='newBook.title')
 
 div(ng-include='"components/footer/footer.html"')

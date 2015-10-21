@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 
-var helper = require('./helper.js');
+var helper = require('./helper');
 var Book = require('./book.model');
 
 //Query book from google book api: exact title | query volumes | return first result
@@ -18,7 +18,7 @@ exports.index = function (req, res) {
   Book.find(function(err, allBooks) {
     if (err) {return handleError(res, err);}
     helper.extraInfo(allBooks, req.user._id, function(error, processBooks) {
-      //console.log('Book', processBooks[0]);
+      //console.log('Book', processBooks);
       if (error) {return handleError(res, error);}
       return res.status(200).json(processBooks);
     });
@@ -82,10 +82,21 @@ exports.destroy = function(req, res) {
     book.users = book.users.filter(function(user) {
       return user.toString() !== req.user._id.toString();
     });
-    book.save(function(err) {
-      if (err) {return handleError(res, err);}
-      return res.status(200).json(book);
-    });
+    //delete book if user list is empty otherwise update
+    if (book.users.length === 0) {
+      //delete
+      book.remove(function(err){
+        if (err) {return handleError(res, err);}
+        return res.status(200).end();
+      });
+    } else {
+      //update
+      book.save(function(err) {
+        if (err) {return handleError(res, err);}
+        return res.status(200).json(book);
+      });
+    }
+
   });
 };
 

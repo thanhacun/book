@@ -6,6 +6,7 @@
 
 var request = require('request');
 var async = require('async');
+var _ = require('lodash');
 
 /**
  * Query book title from Google book
@@ -14,7 +15,7 @@ var async = require('async');
 exports.query = function(bookTitle, cb) {
   //var bookTitle = req.params.bookTitle;
   var bookSearchTerms = '';
-  var bookSearchConditions = '&key=' + process.env.GOOGGLE_API;
+  var bookSearchConditions = '&key=' + process.env.GOOGLE_API;
   var googleBookApiOptions = {
     uri: 'https://www.googleapis.com/books/v1/volumes?q=' + bookTitle + bookSearchTerms + bookSearchConditions,
     json: true
@@ -38,17 +39,37 @@ exports.query = function(bookTitle, cb) {
  * owned: true|false; asked: true|false; askable: true|false
  */
 exports.extraInfo = function(books, userId, cb) {
+  /**
+   * Check an objectId exist in a list of objectIds
+   * @param objIds
+   * @param objId
+   * @returns {*}
+   */
+  var objIdExist = function(objList, objId, objIdKey) {
+    //checkFunc = checkFunc || toString;
+    return objList.reduce(function(a, c) {
+      if (!a) {
+        if (objIdKey) return objId.toString() === c[objIdKey].toString();
+        return objId.toString() === c.toString();
+      } else { return true; }
+    }, false);
+  };
+
   var addExtra = function(book, doneCallback) {
     //user owned the book
-    book.status.owned = book.users.reduce(function(a, c) {
-      if (!a) {return userId.toString() === c.toString();}
-    }, false);
+
+    book.status.owned = objIdExist(book.users, userId);
+
     if (book.status.owned) {
       //is someone asking for the book
       //book.status.askable = false;
+      book.status.asked = objIdExist(book.trades, userId, 'asked');
+      /*
       book.status.asked = book.trades.reduce(function(a, c) {
-        if (!a) {return userId.toString() === c.asked.toString();}
+        if (!a) {a = userId.toString() === c.asked.toString();}
+        return a;
       }, false);
+      */
     } else {
       //can user asks for the book
       book.status.askable = book.users.length > book.trades.length;
