@@ -39,42 +39,15 @@ exports.query = function(bookTitle, cb) {
  * owned: true|false; asked: true|false; askable: true|false
  */
 exports.extraInfo = function(books, userId, cb) {
-  /**
-   * Check an objectId exist in a list of objectIds
-   * @param objIds
-   * @param objId
-   * @returns {*}
-   */
-  var objIdExist = function(objList, objId, objIdKey) {
-    //checkFunc = checkFunc || toString;
-    return objList.reduce(function(a, c) {
-      if (!a) {
-        if (objIdKey) return objId.toString() === c[objIdKey].toString();
-        return objId.toString() === c.toString();
-      } else { return true; }
-    }, false);
-  };
 
   var addExtra = function(book, doneCallback) {
-    //user owned the book
 
-    book.status.owned = objIdExist(book.users, userId);
+    book.status.owned = book.users.some(function(user){ return user.toString() === userId.toString(); });
+    book.status.asked = book.status.owned && book.trades.length > 0;
+    book.status.askable = !book.status.owned
+      && book.trades.length < book.users.length
+      && !book.trades.some(function(user) { return user.toString() === userId.toString(); });
 
-    if (book.status.owned) {
-      //is someone asking for the book
-      //book.status.askable = false;
-      book.status.asked = objIdExist(book.trades, userId, 'asked');
-      /*
-      book.status.asked = book.trades.reduce(function(a, c) {
-        if (!a) {a = userId.toString() === c.asked.toString();}
-        return a;
-      }, false);
-      */
-    } else {
-      //can user asks for the book
-      book.status.askable = book.users.length > book.trades.length;
-    }
-    //console.log('book', book);
     return doneCallback(null, book);
   };
 

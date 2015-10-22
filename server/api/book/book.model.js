@@ -10,10 +10,7 @@ var BookSchema = new Schema({
   cover_url: String,
   des: String,
   users: [{type: Schema.Types.ObjectId, ref: 'User'}],
-  trades: [{
-    asked: {type: Schema.Types.ObjectId, ref: 'User'},
-    asker: {type: Schema.Types.ObjectId, ref: 'User'}
-  }],
+  trades: [{type: Schema.Types.ObjectId, ref: 'User'}],
   status: {
     owned: Boolean,
     asked: Boolean,

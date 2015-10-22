@@ -9,8 +9,10 @@ div(ng-include='"components/navbar/navbar.html"')
           li Trading book
   .row
     .col-lg-12
-      h1(ng-hide='showAllBook') Your books
-      h1(ng-show='showAllBook') All users books
+      header
+        h1(ng-hide='showAllBook') My books
+        span.btn.btn-primary: span.fa.fa-toggle-off
+        h1(ng-show='showAllBook') All books
       .media-list.list-group.col-md-6.col-sm-12.clearfix(ng-repeat='book in books')
         .media.list-group-item
           .media-left
@@ -19,11 +21,13 @@ div(ng-include='"components/navbar/navbar.html"')
             h4.media-heading {{book.name}}
             //First 50 words
             p.clearfix {{book.des.split(' ').slice(0, 50).join(' ') + "..."}}
-          .media-right
+          h3.label.label-success {{'Owners  '}}
             span.badge {{book.users.length}}
-            button.badge.alert-danger(ng-click='modifyBook.deleteBook(book._id)', ng-show='book.status.owned') X
-            button.badge.alert-success(ng-click='modifyBook.exchangeBook()', ng-show='book.status.askable') E
-            button.badge.alert-info(ng-click='modifyBook.changeBook(book)', ng-show='book.status.asked') ?
+          h3.label.label-primary {{'Asked  '}}
+            span.badge {{book.trades.length}}
+          button.badge.alert-danger(ng-click='modifyBook.deleteBook(book._id)', ng-show='book.status.owned'): span.fa.fa-trash-o
+          button.badge.alert-warning(ng-click='modifyBook.askBook(book)', ng-show='book.status.askable'): span.fa.fa-question
+          button.badge.alert-info(ng-click='modifyBook.exchangeBook(book)', ng-show='book.status.asked'): span.fa.fa-exchange
 
   .row
     form.book(name='bookForm')
