@@ -3,7 +3,7 @@
 angular.module('bookApp')
   .config(function ($routeProvider) {
     $routeProvider
-      .when('/book', {
+      .when('/', {
         templateUrl: 'app/book/book.html',
         controller: 'BookCtrl'
       });

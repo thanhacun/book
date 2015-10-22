@@ -3,10 +3,11 @@ div(ng-include='"components/navbar/navbar.html"')
   .row
     header
         ul
-          li.text-muted List all user books
-          li.text-muted List all users books
+          li.text-muted List my books
+          li.text-muted List all books
           li.text-muted Add new book
-          li Trading book
+          li.text-muted Exchange book
+          li.text-mute Optimize database
   .row
     .col-lg-12
       header
@@ -36,4 +37,5 @@ div(ng-include='"components/navbar/navbar.html"')
           button.btn.btn-success(type='button', ng-click='modifyBook.newBook(newBook.title)', ng-disabled='!newBook.title'): span.fa.fa-plus-square
         input.form-control(type='text', ng-model='newBook.title')
 
-div(ng-include='"components/footer/footer.html"')
+.container.text-center
+  div(ng-include='"components/footer/footer.html"')
