@@ -10,14 +10,8 @@ var Book = require('./book.model');
 exports.register = function(socket) {
   //helper.extraInfo need user info to attach extra information to the book
   //using socket to send this information.
-  socket.on('User modifies a book', function(user) {
-    /*
-    Book.schema.post('save', function (doc) {
-      helper.extraInfo([doc], user._id, function(error, extraDoc) {
-        if (!error) {onTest(socket, extraDoc[0]);}
-      });
-    });
-    */
+  socket.on('User modifies a book', function(userMessage) {
+    socket.emit('book:http', userMessage);
   });
 
   Book.schema.post('save', function(doc) {

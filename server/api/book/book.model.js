@@ -14,7 +14,8 @@ var BookSchema = new Schema({
   status: {
     owned: Boolean,
     asked: Boolean,
-    askable: Boolean
+    askable: Boolean,
+    asking: Boolean
   }
 });
 

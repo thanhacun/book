@@ -47,6 +47,8 @@ exports.extraInfo = function(books, userId, cb) {
     book.status.askable = !book.status.owned
       && book.trades.length < book.users.length
       && !book.trades.some(function(user) { return user.toString() === userId.toString(); });
+    book.status.asking = !book.status.askable
+      && book.trades.some(function(user) { return user.toString() === userId.toString(); });
 
     return doneCallback(null, book);
   };

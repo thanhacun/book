@@ -6,7 +6,11 @@ div.navbar.navbar-default.navbar-static-top(ng-controller='NavbarCtrl')
         span.icon-bar
         span.icon-bar
         span.icon-bar
-      a.navbar-brand(href='/') book
+      .navbar-brand
+        span.fa.fa-book
+        //span.fa.fa-spinner.fa-spin(ng-show='dataLoading')
+        = ' book'
+
 
     div#navbar-main.navbar-collapse.collapse(collapse='isCollapsed')
       ul.nav.navbar-nav
