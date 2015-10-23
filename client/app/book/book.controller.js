@@ -4,7 +4,7 @@ angular.module('bookApp')
   .controller('BookCtrl', function ($scope, $http, Auth, socket) {
     $scope.features = [
       'List my books and all books', 'Add new book, ask for a book', 'Exchange books', 'Sync across clients', 'Optimize database'
-    ]
+    ];
     $scope.dataLoading = false;
     $scope.showAllBook = $scope.showAllBook || false;
     $scope.currentUser = Auth.getCurrentUser();
@@ -32,14 +32,16 @@ angular.module('bookApp')
     $scope.allBookToggle = function() {
       $scope.showAllBook = !$scope.showAllBook;
       $scope.getBooks();
-    }
+    };
     $scope.modifyBook = {
       sendUpdateNotify: function(message) {
         message = message || 'User is modifying a book';
-        socket.socket.emit('User modifies a book', {title: message});
+        //socket.socket.emit('User modifies a book', {title: message});
+        $scope.dataLoading = true;
       },
       newBook: function(bookTitle) {
         this.sendUpdateNotify('Add new book');
+        $scope.newBook.title = '';
         //query the title
         $http.get('/api/books/' + bookTitle).success(function(book){
           if (book.id) {
@@ -48,11 +50,11 @@ angular.module('bookApp')
               name: book.volumeInfo.title,
               vol_id: book.id,
               vol_url: book.volumeInfo.canonicalVolumeLink,
-              cover_url: book.volumeInfo.imageLinks.thumbnail,
+              cover_url: (book.volumeInfo.imageLinks) ? book.volumeInfo.imageLinks.thumbnail : 'http://placehold.it/128x190',
               des: book.volumeInfo.description,
               user: Auth.getCurrentUser()._id
             }).success(function(newBook) {
-              $scope.newBook.title = '';
+              console.log(Auth.getCurrentUser().name, 'added a new book of', newBook.name);
             });
           }
         });
@@ -112,14 +114,18 @@ angular.module('bookApp')
       }
       console.log('There is a change in the book of', updatedBook.name);
       $scope.dataLoading = false;
-    })
+    });
     socket.socket.on('book:remove', function(deletedBook) {
       _.remove($scope.books, {_id: deletedBook._id});
       console.log('Delete the book of', deletedBook.name);
       $scope.dataLoading = false;
-    })
+    });
     socket.socket.on('book:http', function(message) {
       console.log(message.title);
-      $scope.dataLoading = true;
+      //$scope.dataLoading = true;
+    });
+
+    $scope.$on('$destroy', function() {
+      socket.unsyncUpdates('book');
     });
   });

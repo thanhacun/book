@@ -1,31 +1,40 @@
 div(ng-include='"components/navbar/navbar.html"')
 
 header.greeting
-  .container
-    h1.text-center Book jump - Features
-    .list-group
-      .list-group-item.list-group-item-success.col-sm-6(ng-repeat='feature in features') {{feature}}
+  .container.text-center
+    h1 Book Jump
+    p.lead A book trading club fetching data from Google Books API
+    //span.fa-stack.fa-lg
+      span.fa.fa-heart-o.fa-stack-3x
+      span.fa.fa-book.fa-stack-2x
+    span.fa.fa-3x.fa-book
 
-.container.stick(ng-show='dataLoading')
-  .loading.text-center: span.fa.fa-2x.fa-spinner.fa-spin
+.loading.text-center(ng-show='dataLoading'): span.fa.fa-3x.fa-spin.fa-spinner.text-danger
 
 .container
   .row
+    h1.page-header.text-center Features
+    ul
+      li.col-sm-4.col-sm-offset-1.text-success(ng-repeat='feature in features')
+        span.fa-li.fa.fa-check-square
+        | {{feature}}
+  .row
     .col-lg-12.text-center
-      h1.page-header(ng-hide='showAllBook') My books and asking ones
+      h1.page-header(ng-hide='showAllBook') My books (and asking ones)
       h1.page-header(ng-show='showAllBook') All users books
 
     .col-sm-12.col-md-6.col-md-offset-3
       form.form-group(name='bookForm')
         .input-group
           .input-group-btn
-            button.btn(ng-click='allBookToggle()', ng-class='{"btn-success": showAllBook}')
-              span(ng-hide='showAllBook') All books
-              span(ng-show='showAllBook') My books
+            button.btn.btn-success(ng-click='allBookToggle()')
+              span(ng-hide='showAllBook'): span.fa.fa-toggle-off
+              span(ng-show='showAllBook'): span.fa.fa-toggle-on
+          .input-group-addon
+            span.text-success All books
           input.form-control(type='text', ng-model='newBook.title', placeholder='Enter book title to add to database')
           .input-group-btn
             button.btn.btn-success(type='button', ng-click='modifyBook.newBook(newBook.title)', ng-disabled='!newBook.title'): span.fa.fa-plus-square
-
 
     .col-sm-12
       .media-list.list-group.col-md-6.col-sm-12.clearfix(ng-repeat='book in books')
