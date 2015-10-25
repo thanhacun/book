@@ -37,8 +37,8 @@ header.greeting
             button.btn.btn-success(type='button', ng-click='modifyBook.newBook(newBook.title)', ng-disabled='!newBook.title'): span.fa.fa-plus-square
 
     .col-sm-12
-      .media-list.list-group.col-md-6.col-sm-12.clearfix(ng-repeat='book in books')
-        .media.list-group-item(ng-class='{"asking-book": book.status.asking, "asked-book": book.status.asked}', ng-show='showAllBook || book.status.owned || book.status.asking')
+      .list-group.col-md-6.col-sm-12.clearfix(ng-repeat='book in books')
+        .list-group-item(ng-class='{"asking-book": book.status.asking, "asked-book": book.status.asked}', ng-show='showAllBook || book.status.owned || book.status.asking')
           .media-left
             a(href='{{book.vol_url}}')
               img.media-object.img-rounded(ng-src='{{book.cover_url}}')
@@ -48,16 +48,13 @@ header.greeting
               button.badge.alert-danger(ng-click='modifyBook.deleteBook(book._id)', ng-show='book.status.owned || currentUser.email === "admin@admin.com"', data-toggle='tooltip', title='Delete the book') Delete?
             h4.media-heading.text-danger {{book.name}}
             //First 50 words
-            p.clearfix {{book.des.split(' ').slice(0, 50).join(' ') + " ..."}}
-          span.badge.alert-info
-            | {{'Asks: ' + book.trades.length + ' ' }}
-            button.badge.alert-danger(ng-click='modifyBook.exchangeBook(book)', ng-show='book.status.asked', data-toggle='tooltip', title='Exchange the book') Give it?
-            button.badge.alert-warning(ng-click='modifyBook.askBook(book)', ng-show='book.status.askable', data-toggle='tooltip', title='Ask for the book') Want it?
-            span.badge.alert-warning(ng-show='book.status.asking') Be patient
-          span.badge.alert-warning(ng-hide='book.status.asking || book.status.askable || book.status.owned') Not Available
-
-
-          //span.badge.alert-info(ng-show='book.status.asked') Give it?
+            p {{book.des.split(' ').slice(0, 50).join(' ') + " ..."}}
+            span.badge.alert-info.pull-right
+              | {{'Asks: ' + book.trades.length + ' ' }}
+              button.badge.alert-danger(ng-click='modifyBook.exchangeBook(book)', ng-show='book.status.asked', data-toggle='tooltip', title='Exchange the book') Give it?
+              button.badge.alert-warning(ng-click='modifyBook.askBook(book)', ng-show='book.status.askable', data-toggle='tooltip', title='Ask for the book') Want it?
+              span.badge.alert-warning(ng-show='book.status.asking') Be patient
+            span.badge.alert-warning.pull-right(ng-hide='book.status.asking || book.status.askable || book.status.owned') Not Available
 
 .container.text-center
   div(ng-include='"components/footer/footer.html"')
