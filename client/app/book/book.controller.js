@@ -36,7 +36,6 @@ angular.module('bookApp')
     $scope.modifyBook = {
       sendUpdateNotify: function(message) {
         message = message || 'User is modifying a book';
-        //socket.socket.emit('User modifies a book', {title: message});
         $scope.dataLoading = true;
       },
       newBook: function(bookTitle) {

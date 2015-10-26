@@ -13,7 +13,6 @@ var _ = require('lodash');
  * exact title | query volumes | return first result
  */
 exports.query = function(bookTitle, cb) {
-  //var bookTitle = req.params.bookTitle;
   var bookSearchTerms = '';
   var bookSearchConditions = '&key=' + process.env.GOOGLE_API;
   var googleBookApiOptions = {
@@ -35,8 +34,8 @@ exports.query = function(bookTitle, cb) {
 };
 
 /**
- * Process books in database to add some fields
- * owned: true|false; asked: true|false; askable: true|false
+ * Process books in database to add some extra information based on user login
+ * owned: true|false; asked: true|false; askable: true|false; asking: true|false
  */
 exports.extraInfo = function(books, userId, cb) {
 

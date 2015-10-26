@@ -5,7 +5,6 @@ var _ = require('lodash');
 var helper = require('./helper');
 var Book = require('./book.model');
 
-//Query book from google book api: exact title | query volumes | return first result
 exports.query = function(req, res) {
   helper.query(req.params.bookTitle, function(error, result) {
     if (error) return res.status(500).json({});
@@ -42,8 +41,9 @@ exports.create = function(req, res) {
   Book.findOne({vol_id:req.body.vol_id}, function(err, book) {
     if (err) return res.status(500).json({});
     if (book) {
-      //book already added --> push user
+      //book already added: push user to users list and remove user out of trades list if needed
       book.users.push(req.user._id);
+      book.trades = _.filter(book.trades, function(user) { return user.toString() !== req.user._id.toString(); });
       book.save(function(err) {
         if (err) {return handleError(res, err);}
         return res.status(200).json(book);
@@ -98,10 +98,9 @@ exports.destroy = function(req, res) {
         return res.status(200).json(book);
       });
     }
-
   });
 };
 
 function handleError(res, err) {
   return res.status(500).send(err);
-}
+};
