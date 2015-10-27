@@ -19,8 +19,10 @@ angular.module('bookApp')
           .filter(function(book) {
             return $scope.showAllBook || book.status.asking || book.status.owned;
           })
-          .sort(function(book){
-            return !book.status.asking;
+          .sortBy(function(book){
+            if (book.status.asking) return 0;
+            if (book.status.asked) return 1;
+            return 2;
           })
           .value();
         $scope.dataLoading = false;
