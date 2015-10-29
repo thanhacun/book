@@ -5,6 +5,14 @@ var _ = require('lodash');
 var helper = require('./helper');
 var Book = require('./book.model');
 
+exports.search = function(req, res) {
+  helper.search(req.params.bookTitle, function(error, result) {
+    if (error) return res.status(500).json({});
+    //console.log(result);
+    return res.status(200).json(result);
+  });
+};
+
 exports.query = function(req, res) {
   helper.query(req.params.bookTitle, function(error, result) {
     if (error) return res.status(500).json({});

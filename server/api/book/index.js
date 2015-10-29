@@ -6,6 +6,7 @@ var auth = require('../../auth/auth.service');
 
 var router = express.Router();
 
+router.get('/search/:bookTitle', controller.search)
 router.get('/:bookTitle', controller.query);
 
 router.get('/', auth.isAuthenticated(), controller.index);

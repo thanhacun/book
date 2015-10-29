@@ -3,12 +3,13 @@
 angular.module('bookApp')
   .controller('BookCtrl', function ($scope, $http, Auth, socket) {
     $scope.features = [
-      'List my books and all books', 'Add new book, ask for a book', 'Exchange books', 'Sync across clients', 'Optimize database'
+      'List my books and all books', 'Add new book, ask for a book', 'Exchange books', 'Sync across clients', 'Optimize database', 'Auto-compete search'
     ];
     $scope.dataLoading = false;
     $scope.showAllBook = $scope.showAllBook || false;
     $scope.currentUser = Auth.getCurrentUser();
     $scope.books = [];
+    $scope.minLength = 5;
 
     $scope.getBooks = function() {
       $scope.dataLoading = true;
@@ -40,24 +41,38 @@ angular.module('bookApp')
         message = message || 'User is modifying a book';
         $scope.dataLoading = true;
       },
-      newBook: function(bookTitle) {
-        this.sendUpdateNotify('Add new book');
-        $scope.newBook.title = '';
-        //query the title
-        $http.get('/api/books/' + bookTitle).success(function(book){
-          if (book.id) {
-            //add new title to database if exists
-            $http.post('/api/books', {
-              name: book.volumeInfo.title,
-              vol_id: book.id,
-              vol_url: book.volumeInfo.canonicalVolumeLink,
-              cover_url: (book.volumeInfo.imageLinks) ? book.volumeInfo.imageLinks.thumbnail : 'http://placehold.it/128x190',
-              des: book.volumeInfo.description,
-              user: Auth.getCurrentUser()._id
-            }).success(function(newBook) {
-              console.log(Auth.getCurrentUser().name, 'added a new book of', newBook.name);
+      searchBook: function() {
+        if ($scope.searchTitle.length >= $scope.minLength) {
+          $scope.dataLoading = true;
+          $http.get('/api/books/search/' + $scope.searchTitle).success(function(result) {
+              $scope.searchResults = result.items.map(function(item) {
+                if (item.volumeInfo.title && item.volumeInfo.authors && item.volumeInfo.publishedDate) {
+                  return {
+                    label: item.volumeInfo.title + ', ' + item.volumeInfo.authors[0] + ', ' + item.volumeInfo.publishedDate,
+                    name: item.volumeInfo.title,
+                    vol_id: item.id,
+                    vol_url: item.volumeInfo.canonicalVolumeLink,
+                    cover_url: (item.volumeInfo.imageLinks) ? item.volumeInfo.imageLinks.thumbnail : 'http://placehold.it/128x190',
+                    rate: item.volumeInfo.averageRating || 0,
+                    des: item.volumeInfo.description,
+                    user: Auth.getCurrentUser()._id
+                  };
+                } else {
+                  return {};
+                }
+              });
+              $scope.dataLoading = false;
             });
-          }
+        } else {
+            $scope.searchResults = [];
+        }
+
+      },
+      selectBook: function(select) {
+        this.sendUpdateNotify('User add a new book');
+        this.clearSearch();
+        $http.post('/api/books', select).success(function(newBook) {
+          console.log(Auth.getCurrentUser().name, 'added a new book of', newBook.name);
         });
       },
       deleteBook: function(bookID) {
@@ -82,6 +97,10 @@ angular.module('bookApp')
           console.log(Auth.getCurrentUser().name, 'given the book of', updatedBook.name);
         });
 
+      },
+      clearSearch: function() {
+        $scope.searchTitle = '';
+        $scope.searchResults = [];
       }
     };
     /**
@@ -114,6 +133,7 @@ angular.module('bookApp')
         if ($scope.showAllBook || updatedBook.status.owned || updatedBook.status.asking ) {$scope.books.push(updatedBook);}
       }
       console.log('There is a change in the book of', updatedBook.name);
+      //$scope.$apply();
       $scope.dataLoading = false;
     });
     socket.socket.on('book:remove', function(deletedBook) {
@@ -121,11 +141,6 @@ angular.module('bookApp')
       console.log('Delete the book of', deletedBook.name);
       $scope.dataLoading = false;
     });
-    socket.socket.on('book:http', function(message) {
-      console.log(message.title);
-      //$scope.dataLoading = true;
-    });
-
     $scope.$on('$destroy', function() {
       socket.unsyncUpdates('book');
     });

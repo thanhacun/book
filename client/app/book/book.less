@@ -9,7 +9,7 @@
   position: fixed;
   top: 50%;
   left:50%;
-  z-index: 1000;
+  z-index: 5;
 }
 .greeting {
   margin-top: -20px;
@@ -17,4 +17,27 @@
   padding: 30px 15px;
   background: #4393B9;
   color: white;
+}
+
+#searchResults {
+  height: 600px;
+  position: absolute;
+  overflow: scroll;
+  overflow-y: visible;
+  z-index: 10;
+  .list-group-item .media-object {
+      height: 40%;
+  }
+  .odd {
+    background: darken(@base-bgColor, 15%);
+  }
+  .even {
+    background: darken(@base-bgColor, 25%);
+  }
+}
+
+#showBooks {
+  .list-group-item .media-object {
+    height: 190px;
+  }
 }
