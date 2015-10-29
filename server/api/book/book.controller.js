@@ -44,13 +44,14 @@ exports.show = function(req, res) {
 // Creates a new book in the DB.
 exports.create = function(req, res) {
   var receivedBook = req.body;
+  console.log(req.body);
   //Check vol_id exist: vol_id is unique
   //Check users exist
-  Book.findOne({vol_id:req.body.vol_id}, function(err, book) {
+  Book.findOne({vol_id: req.body.vol_id}, function(err, book) {
     if (err) return res.status(500).json({});
     if (book) {
       //book already added: push user to users list and remove user out of trades list if needed
-      book.users.push(req.user._id);
+      if (!_.some(book.users, function(user) { return user.toString() === req.user._id.toString(); })) {book.users.push(req.user._id);}
       book.trades = _.filter(book.trades, function(user) { return user.toString() !== req.user._id.toString(); });
       book.save(function(err) {
         if (err) {return handleError(res, err);}

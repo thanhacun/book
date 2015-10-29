@@ -71,6 +71,7 @@ angular.module('bookApp')
       selectBook: function(select) {
         this.sendUpdateNotify('User add a new book');
         this.clearSearch();
+        console.log(select);
         $http.post('/api/books', select).success(function(newBook) {
           console.log(Auth.getCurrentUser().name, 'added a new book of', newBook.name);
         });
