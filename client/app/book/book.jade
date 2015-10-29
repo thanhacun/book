@@ -30,8 +30,8 @@ header.greeting
             button.btn.btn-success(ng-click='allBookToggle()')
               span(ng-hide='showAllBook'): span.fa.fa-toggle-off
               span(ng-show='showAllBook'): span.fa.fa-toggle-on
-          .input-group-addon(ng-hide='showAllBook')
-            span.text-success All books
+          .input-group-addon(ng-hide='showAllBook'): span.text-success My books
+          .input-group-addon(ng-show='showAllBook'): span All books
           input.form-control(type='text', ng-model='searchTitle', placeholder='Enter book title to add to database', list='bookTitles', name='bookTitle', ng-change='modifyBook.searchBook()')
           .input-group-btn
             button.btn.btn-success(type='button', ng-click='modifyBook.clearSearch()'): span.fa.fa-times-circle
@@ -45,8 +45,8 @@ header.greeting
               span {{search.label}}
 
     .col-sm-12
-      #showBooks.list-group.col-md-6.col-sm-12(ng-repeat='book in books')
-        .list-group-item(ng-class='{"asking-book": book.status.asking, "asked-book": book.status.asked}', ng-show='showAllBook || book.status.owned || book.status.asking')
+      #showBooks.list-group
+        .list-group-item.col-md-6.col-sm-12(ng-repeat='book in books track by $index', ng-class='{"asking-book": book.status.asking, "asked-book": book.status.asked}', ng-show='showAllBook || book.status.owned || book.status.asking')
           .media-left
             a(href='{{book.vol_url}}')
               img.media-object.img-rounded(ng-src='{{book.cover_url}}')
@@ -55,8 +55,8 @@ header.greeting
               | {{'Owners: ' + book.users.length + ' '}}
               button.badge.alert-danger(ng-click='modifyBook.deleteBook(book._id)', ng-show='book.status.owned || currentUser.email === "admin@admin.com"', data-toggle='tooltip', title='Delete the book') Delete?
             h4.media-heading.text-danger {{book.name}}
-            //First 25 words
-            p {{book.des.split(' ').slice(0, 25).join(' ') + " ..."}}
+            //First sentence
+            p {{book.des.split('. ').slice(0, 1) + " ..."}}
             span.badge.alert-info.pull-right
               | {{'Asks: ' + book.trades.length + ' ' }}
               button.badge.alert-danger(ng-click='modifyBook.exchangeBook(book)', ng-show='book.status.asked', data-toggle='tooltip', title='Exchange the book') Give it?

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('bookApp')
-  .controller('BookCtrl', function ($scope, $http, Auth, socket) {
+  .controller('BookCtrl', function ($scope, $http, $timeout, Auth, socket) {
     $scope.features = [
       'List my books and all books', 'Add new book, ask for a book', 'Exchange books', 'Sync across clients', 'Optimize database', 'Auto-compete search'
     ];
@@ -10,25 +10,29 @@ angular.module('bookApp')
     $scope.currentUser = Auth.getCurrentUser();
     $scope.books = [];
     $scope.minLength = 5;
+    var tick = 1000;
+    $scope.timeToSearch = false;
 
     $scope.getBooks = function() {
       $scope.dataLoading = true;
       $http.get('/api/books').success(function(books) {
         //return books: all books OR owned books AND asking books
         //then sorted by asking book first
-        $scope.books = _.chain(books)
-          .filter(function(book) {
-            return $scope.showAllBook || book.status.asking || book.status.owned;
-          })
-          .sortBy(function(book){
-            if (book.status.asking) return 0;
-            if (book.status.asked) return 1;
-            return 2;
-          })
-          .value();
+        $scope.sortBooks(books);
         $scope.dataLoading = false;
       });
     };
+
+    $scope.sortBooks = function(books) {
+      $scope.books = books || $scope.books;
+      $scope.books = _.chain($scope.books)
+        .sortBy(function(book) {
+          if (book.status.asking) return 0;
+          if (book.status.asked) return 1;
+          return 2;
+        })
+        .value();
+    }
 
     $scope.getBooks();
 
@@ -36,15 +40,26 @@ angular.module('bookApp')
       $scope.showAllBook = !$scope.showAllBook;
       $scope.getBooks();
     };
+
+    var countTick = function() {
+      $scope.timeToSearch = true;
+      //console.log(Date.now());
+      $timeout(countTick, tick);
+    };
+
+    $timeout(countTick, tick);
+
     $scope.modifyBook = {
       sendUpdateNotify: function(message) {
         message = message || 'User is modifying a book';
         $scope.dataLoading = true;
       },
       searchBook: function() {
+        //TODO search every some mili-seconds
         if ($scope.searchTitle.length >= $scope.minLength) {
           $scope.dataLoading = true;
           $http.get('/api/books/search/' + $scope.searchTitle).success(function(result) {
+              //if (!result.items) return {};
               $scope.searchResults = result.items.map(function(item) {
                 if (item.volumeInfo.title && item.volumeInfo.authors && item.volumeInfo.publishedDate) {
                   return {
@@ -133,12 +148,14 @@ angular.module('bookApp')
         //only push if: show all books OR owned the book OR asking for a book
         if ($scope.showAllBook || updatedBook.status.owned || updatedBook.status.asking ) {$scope.books.push(updatedBook);}
       }
+      $scope.sortBooks();
       console.log('There is a change in the book of', updatedBook.name);
       //$scope.$apply();
       $scope.dataLoading = false;
     });
     socket.socket.on('book:remove', function(deletedBook) {
       _.remove($scope.books, {_id: deletedBook._id});
+      $scope.sortBooks();
       console.log('Delete the book of', deletedBook.name);
       $scope.dataLoading = false;
     });

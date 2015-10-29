@@ -44,7 +44,7 @@ exports.show = function(req, res) {
 // Creates a new book in the DB.
 exports.create = function(req, res) {
   var receivedBook = req.body;
-  console.log(req.body);
+  //console.log(req.body);
   //Check vol_id exist: vol_id is unique
   //Check users exist
   Book.findOne({vol_id: req.body.vol_id}, function(err, book) {

@@ -8,40 +8,6 @@ var request = require('request');
 var async = require('async');
 var _ = require('lodash');
 
-var bookAPI = {
-  bookSearchTerms: '',
-  //bookSearchConditions: '&key=' + process.env.GOOGLE_API,
-  googleBookApiOptions: {
-    uri: 'https://www.googleapis.com/books/v1/volumes?key=' + process.env.GOOGLE_API,
-    json: true
-  }
-};
-
-/**
- * Query book title from Google book
- * exact title | query volumes | return first result
- */
-exports.query = function(bookTitle, cb) {
-  var bookSearchTerms = '';
-  var bookSearchConditions = '&key=' + process.env.GOOGLE_API;
-  var googleBookApiOptions = {
-    uri: 'https://www.googleapis.com/books/v1/volumes?q=' + bookTitle + bookSearchTerms + bookSearchConditions,
-    json: true
-  };
-
-  request(googleBookApiOptions, function(error, response, body) {
-    if (error || response.statusCode !== 200) return cb('Something wrong', {});
-    //Return exact title match, otherwise first result
-    //TODO: CAN MAKE IT BETTER?
-    var result = body.items.filter(function(volume){
-      return volume.volumeInfo.title.toLowerCase() === bookTitle.toLowerCase();
-    });
-    if (!result.length) {result = [body.items[0]];}
-
-    return cb(null, result[0]);
-  })
-};
-
 /**
  * Forward to google book api with api key
  * Serving auto complete search
