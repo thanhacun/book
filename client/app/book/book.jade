@@ -31,7 +31,7 @@ header.greeting
         .input-group-addon(ng-show='showAllBook'): span All books
         input.form-control(type='text', ng-model='searchTitle', placeholder='Input a book title (ENTER or TAB to search)', list='bookTitles', name='bookTitle', ng-keyup='onEnter(event=$event)', ng-blur='modifyBook.searchBook()')
         .input-group-btn
-          button.btn.btn-success(type='button', ng-click='modifyBook.clearSearch()'): span.fa.fa-times
+          button.btn.btn-success(type='button', ng-click='modifyBook.clearSearch()', ng-disabled='!searchTitle'): span.fa.fa-times
       //list search options
       #errorShow.alert-danger.text-center(ng-show='errorMessage')
         h2 There is an error - Try later
@@ -42,7 +42,8 @@ header.greeting
             a(href='', ng-click='modifyBook.selectBook(search)'): img.media-object(ng-src='{{search.cover_url}}')
           .media-body
             span.badge.pull-right(ng-show='search.rate') {{search.rate}}
-            span {{search.label}}
+            span.strong {{search.label}}
+            p.small {{search.des.split('. ').slice(0,1).join('. ')}}
 
     .col-sm-12
       #showBooks.list-group

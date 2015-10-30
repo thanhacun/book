@@ -13,7 +13,7 @@ var _ = require('lodash');
  * Serving auto complete search
  */
 exports.search = function(bookTitle, cb) {
-  var bookSearchTerms = '';
+  var bookSearchTerms = '&printType=books';
   var bookSearchConditions = '&key=' + process.env.GOOGLE_API;
   var googleBookApiOptions = {
     uri: 'https://www.googleapis.com/books/v1/volumes?q=' + bookTitle + bookSearchTerms + bookSearchConditions,
