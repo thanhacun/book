@@ -4,9 +4,6 @@ header.greeting
   .container.text-center
     h1 Book Jump
     p.lead A book trading club fetching data from Google Books API
-    //span.fa-stack.fa-lg
-      span.fa.fa-heart-o.fa-stack-3x
-      span.fa.fa-book.fa-stack-2x
     span.fa.fa-3x.fa-book
 
 .loading.text-center(ng-show='dataLoading'): span.fa.fa-3x.fa-spin.fa-spinner.text-danger
@@ -24,25 +21,28 @@ header.greeting
       h1.page-header(ng-show='showAllBook') All users books ({{books.length}} volumes)
 
     .col-sm-12.col-md-6.col-md-offset-3
-      form.form-group(name='bookForm')
-        .input-group
-          .input-group-btn
-            button.btn.btn-success(ng-click='allBookToggle()')
-              span(ng-hide='showAllBook'): span.fa.fa-toggle-off
-              span(ng-show='showAllBook'): span.fa.fa-toggle-on
-          .input-group-addon(ng-hide='showAllBook'): span.text-success My books
-          .input-group-addon(ng-show='showAllBook'): span All books
-          input.form-control(type='text', ng-model='searchTitle', placeholder='Enter book title to add to database', list='bookTitles', name='bookTitle', ng-change='modifyBook.searchBook()')
-          .input-group-btn
-            button.btn.btn-success(type='button', ng-click='modifyBook.clearSearch()'): span.fa.fa-times-circle
-        //list search options
-        #searchResults.list-group(ng-show='searchResults && searchTitle')
-          .list-group-item(ng-repeat='search in searchResults track by $index', class='{{($index % 2) ? "even": "odd"}}')
-            .media-left
-              a(href='', ng-click='modifyBook.selectBook(search)'): img.media-object(ng-src='{{search.cover_url}}')
-            .media-body
-              span.badge.pull-right(ng-show='search.rate') {{search.rate}}
-              span {{search.label}}
+      //form.form-group(name='bookForm')
+      .input-group.form-group
+        .input-group-btn
+          button.btn.btn-success(ng-click='allBookToggle()')
+            span(ng-hide='showAllBook'): span.fa.fa-toggle-off
+            span(ng-show='showAllBook'): span.fa.fa-toggle-on
+        .input-group-addon(ng-hide='showAllBook'): span.text-success My books
+        .input-group-addon(ng-show='showAllBook'): span All books
+        input.form-control(type='text', ng-model='searchTitle', placeholder='Input a book title (ENTER or TAB to search)', list='bookTitles', name='bookTitle', ng-keyup='onEnter(event=$event)', ng-blur='modifyBook.searchBook()')
+        .input-group-btn
+          button.btn.btn-success(type='button', ng-click='modifyBook.clearSearch()'): span.fa.fa-times
+      //list search options
+      #errorShow.alert-danger.text-center(ng-show='errorMessage')
+        h2 There is an error - Try later
+        p.lead Message from server: {{errorMessage}}
+      #searchResults.list-group(ng-show='!errorMessage && searchResults && searchTitle')
+        .list-group-item(ng-repeat='search in searchResults track by $index', class='{{($index % 2) ? "even": "odd"}}')
+          .media-left
+            a(href='', ng-click='modifyBook.selectBook(search)'): img.media-object(ng-src='{{search.cover_url}}')
+          .media-body
+            span.badge.pull-right(ng-show='search.rate') {{search.rate}}
+            span {{search.label}}
 
     .col-sm-12
       #showBooks.list-group

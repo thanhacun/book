@@ -3,13 +3,13 @@
 angular.module('bookApp')
   .controller('BookCtrl', function ($scope, $http, $timeout, Auth, socket) {
     $scope.features = [
-      'List my books and all books', 'Add new book, ask for a book', 'Exchange books', 'Sync across clients', 'Optimize database', 'Auto-compete search'
+      'List my books and all books', 'Add new book, ask for a book', 'Exchange books', 'Sync across clients', 'Optimize database', 'Auto-compete search (Cancel due to api limit)'
     ];
     $scope.dataLoading = false;
     $scope.showAllBook = $scope.showAllBook || false;
     $scope.currentUser = Auth.getCurrentUser();
     $scope.books = [];
-    $scope.minLength = 5;
+    $scope.minLength = 2;
     var tick = 1000;
     $scope.timeToSearch = false;
 
@@ -47,7 +47,13 @@ angular.module('bookApp')
       $timeout(countTick, tick);
     };
 
-    $timeout(countTick, tick);
+    //$timeout(countTick, tick)
+    $scope.onEnter = function(event) {
+      //console.log(event);
+      if ($scope.searchTitle && event.keyCode === 13) {
+        $scope.modifyBook.searchBook();
+      }
+    };
 
     $scope.modifyBook = {
       sendUpdateNotify: function(message) {
@@ -55,12 +61,12 @@ angular.module('bookApp')
         $scope.dataLoading = true;
       },
       searchBook: function() {
-        //TODO search every some mili-seconds
+        //Auto-complete search reach api limit - find another way
         if ($scope.searchTitle.length >= $scope.minLength) {
           $scope.dataLoading = true;
-          $http.get('/api/books/search/' + $scope.searchTitle).success(function(result) {
-              //if (!result.items) return {};
-              $scope.searchResults = result.items.map(function(item) {
+          $http.get('/api/books/search/' + $scope.searchTitle).then(function(result) {
+              //console.log(result);
+              $scope.searchResults = result.data.items.map(function(item) {
                 if (item.volumeInfo.title && item.volumeInfo.authors && item.volumeInfo.publishedDate) {
                   return {
                     label: item.volumeInfo.title + ', ' + item.volumeInfo.authors[0] + ', ' + item.volumeInfo.publishedDate,
@@ -77,7 +83,11 @@ angular.module('bookApp')
                 }
               });
               $scope.dataLoading = false;
-            });
+            }, function(response) {
+              console.log(response.data.error.message);
+              $scope.errorMessage = response.data.error.message;
+              $scope.dataLoading = false;
+          });
         } else {
             $scope.searchResults = [];
         }
@@ -117,6 +127,7 @@ angular.module('bookApp')
       clearSearch: function() {
         $scope.searchTitle = '';
         $scope.searchResults = [];
+        $scope.errorMessage = '';
       }
     };
     /**

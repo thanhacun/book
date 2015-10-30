@@ -19,9 +19,9 @@ exports.search = function(bookTitle, cb) {
     uri: 'https://www.googleapis.com/books/v1/volumes?q=' + bookTitle + bookSearchTerms + bookSearchConditions,
     json: true
   };
-  //bookAPI.googleBookApiOptions.uri = '&q=' + bookTitle + bookAPI.bookSearchTerms;
   request(googleBookApiOptions, function(error, response, body) {
-    if (error || response.statusCode !== 200) return cb('Something wrong', {});
+    console.log(googleBookApiOptions.uri);
+    if (error || response.statusCode !== 200) return cb('Something wrong', body);
     return cb(null, body);
   });
 };
