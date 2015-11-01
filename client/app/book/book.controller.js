@@ -3,7 +3,7 @@
 angular.module('bookApp')
   .controller('BookCtrl', function ($scope, $http, $timeout, Auth, socket) {
     $scope.features = [
-      'List my books and all books', 'Add new book, ask for a book', 'Exchange books', 'Sync across clients', 'Optimize database', 'Auto-compete search (Cancel due to api limit)'
+      'List my books and all books', 'Add new book, ask for a book', 'Exchange books', 'Sync across clients', 'Optimize database', 'Auto-compete search (reached api limit)'
     ];
     $scope.dataLoading = false;
     $scope.showAllBook = $scope.showAllBook || false;
@@ -49,7 +49,7 @@ angular.module('bookApp')
 
     //$timeout(countTick, tick)
     $scope.onEnter = function(event) {
-      //console.log(event);
+      console.log(event.keyCode);
       if ($scope.searchTitle && event.keyCode === 13) {
         $scope.modifyBook.searchBook();
       }

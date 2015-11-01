@@ -12,9 +12,11 @@ header.greeting
   .row
     h1.page-header.text-center Features
     ul
-      li.col-sm-4.col-sm-offset-1.text-success(ng-repeat='feature in features')
+      li.col-sm-4.col-sm-offset-1.text-success(ng-repeat='feature in features track by $index')
         span.fa-li.fa.fa-check-square
-        | {{feature}}
+        span(ng-if='$index < 5') {{feature}}
+        a(href='http://codepen.io/thanhacun/pen/full/wKmPWr', ng-if='$index === 5')
+          span.text-muted {{feature}}
   .row
     .col-lg-12.text-center
       h1.page-header(ng-hide='showAllBook') My books (and asking ones)
@@ -27,9 +29,9 @@ header.greeting
           button.btn.btn-success(ng-click='allBookToggle()')
             span(ng-hide='showAllBook'): span.fa.fa-toggle-off
             span(ng-show='showAllBook'): span.fa.fa-toggle-on
-        .input-group-addon(ng-hide='showAllBook'): span.text-success My books
-        .input-group-addon(ng-show='showAllBook'): span All books
-        input.form-control(type='text', ng-model='searchTitle', placeholder='Input a book title (ENTER or TAB to search)', list='bookTitles', name='bookTitle', ng-keyup='onEnter(event=$event)', ng-blur='modifyBook.searchBook()')
+        .input-group-addon.hidden-xs(ng-hide='showAllBook'): span.text-success My books
+        .input-group-addon.hidden-xs(ng-show='showAllBook'): span All books
+        input.form-control(type='text', ng-model='searchTitle', placeholder='Input a book title (ENTER to search)', list='bookTitles', name='bookTitle', ng-keyup='onEnter(event=$event)')
         .input-group-btn
           button.btn.btn-success(type='button', ng-click='modifyBook.clearSearch()', ng-disabled='!searchTitle'): span.fa.fa-times
       //list search options
