@@ -55,8 +55,12 @@ header.greeting
               img.media-object.img-rounded(ng-src='{{book.cover_url}}')
           .media-body
             span.badge.alert-success.pull-right
-              | {{'Owners: ' + book.users.length + ' '}}
-              button.badge.alert-danger(ng-click='modifyBook.deleteBook(book._id)', ng-show='book.status.owned || currentUser.email === "admin@admin.com"', data-toggle='tooltip', title='Delete the book') Delete?
+              span.hidden-xs {{'Owners: '}}
+              span {{book.users.length + ' '}}
+              //| {{'Owners: ' + book.users.length + ' '}}
+              button.badge.alert-danger(ng-click='modifyBook.deleteBook(book._id)', ng-show='book.status.owned || currentUser.email === "admin@admin.com"', data-toggle='tooltip', title='Delete the book')
+                span.fa.fa-times.visible-xs
+                span.hidden-xs Delete?
             h4.media-heading.text-danger {{book.name}}
             //First sentence
             p {{book.des.split('. ').slice(0, 1) + " ..."}}
