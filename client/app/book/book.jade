@@ -15,7 +15,7 @@ header.greeting
       li.col-sm-4.col-sm-offset-1.text-success(ng-repeat='feature in features track by $index')
         span.fa-li.fa.fa-check-square
         span(ng-if='$index < 5') {{feature}}
-        a(href='http://codepen.io/thanhacun/pen/full/wKmPWr', ng-if='$index === 5')
+        a(href='http://codepen.io/thanhacun/full/wKmPWr', ng-if='$index === 5')
           span.text-muted {{feature}}
   .row
     .col-lg-12.text-center
@@ -35,7 +35,7 @@ header.greeting
         .input-group-btn
           button.btn.btn-success(type='button', ng-click='modifyBook.clearSearch()', ng-disabled='!searchTitle'): span.fa.fa-times
       //list search options
-      #errorShow.alert-danger.text-center(ng-show='errorMessage')
+      #errorShow.alert.alert-danger.text-center(ng-show='errorMessage')
         h2 There is an error - Try later
         p.lead Message from server: {{errorMessage}}
       #searchResults.list-group(ng-show='!errorMessage && searchResults && searchTitle')
